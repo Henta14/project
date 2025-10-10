@@ -35,17 +35,25 @@ public class Client {
     public String getRegistrationNumber() { return registrationNumber; }
     public void setRegistrationNumber(String registrationNumber) { this.registrationNumber = registrationNumber; }
 
-    public static boolean validateEmail(String email) {
-        return email != null && email.matches("^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,}$");
+    public class Validator {
+
+        private static boolean validate(String value, String regex) {
+            return value != null && value.matches(regex);
+        }
+
+        public static boolean validateEmail(String email) {
+            return validate(email, "^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,}$");
+        }
+
+        public static boolean validatePhone(String phone) {
+            return validate(phone, "^\\+?\\d{10,15}$");
+        }
+
+        public static boolean validateNotEmpty(String value) {
+            return value != null && !value.trim().isEmpty();
+        }
     }
 
-    public static boolean validatePhone(String phone) {
-        return phone != null && phone.matches("^\\+?\\d{10,15}$");
-    }
-
-    public static boolean validateNotEmpty(String value) {
-        return value != null && !value.trim().isEmpty();
-    }
 }
 
 
