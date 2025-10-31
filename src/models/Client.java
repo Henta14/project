@@ -1,5 +1,7 @@
 package models;
 
+import org.json.JSONObject;
+
 public class Client {
     private int clientId;
     private String name;
@@ -15,7 +17,6 @@ public class Client {
         return value != null && value.matches(regex);
     }
 
-    // Проверки, использующие универсальный метод
     public static boolean validateEmail(String email) {
         return validate(email, "^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,}$");
     }
@@ -28,10 +29,9 @@ public class Client {
         return value != null && !value.trim().isEmpty();
     }
 
-    // Основной конструктор с валидацией
+    // Основной конструктор
     public Client(int clientId, String name, String address, String phone, String email,
                   String contactPerson, String taxId, String registrationNumber) {
-
         if (!validateNotEmpty(name)) throw new IllegalArgumentException("Имя не может быть пустым");
         if (!validatePhone(phone)) throw new IllegalArgumentException("Некорректный номер телефона");
         if (!validateEmail(email)) throw new IllegalArgumentException("Некорректный email");
@@ -46,12 +46,10 @@ public class Client {
         this.registrationNumber = registrationNumber;
     }
 
-    // Перегрузка конструктора — создание из CSV строки
+    // Конструктор из CSV
     public Client(String csvLine) {
         String[] parts = csvLine.split(",");
-        if (parts.length != 8) {
-            throw new IllegalArgumentException("Неверный формат CSV");
-        }
+        if (parts.length != 8) throw new IllegalArgumentException("Неверный формат CSV");
 
         int id = Integer.parseInt(parts[0].trim());
         String name = parts[1].trim();
@@ -75,43 +73,17 @@ public class Client {
         this.registrationNumber = regNum;
     }
 
-    // Перегрузка конструктора — создание из JSON строки (простейший парсер)
-    public Client(String json, boolean fromJson) {
-        try {
-            json = json.replaceAll("[{}\" ]", ""); // убрать фигурные скобки, кавычки, пробелы
-            String[] pairs = json.split(",");
-            String[] values = new String[8];
-            for (int i = 0; i < pairs.length; i++) {
-                String[] keyValue = pairs[i].split(":");
-                values[i] = keyValue[1];
-            }
-
-            int id = Integer.parseInt(values[0]);
-            String name = values[1];
-            String address = values[2];
-            String phone = values[3];
-            String email = values[4];
-            String contactPerson = values[5];
-            String taxId = values[6];
-            String regNum = values[7];
-
-            // Проверка валидности
-            if (!validateNotEmpty(name)) throw new IllegalArgumentException("Имя не может быть пустым");
-            if (!validatePhone(phone)) throw new IllegalArgumentException("Некорректный телефон");
-            if (!validateEmail(email)) throw new IllegalArgumentException("Некорректный email");
-
-            this.clientId = id;
-            this.name = name;
-            this.address = address;
-            this.phone = phone;
-            this.email = email;
-            this.contactPerson = contactPerson;
-            this.taxId = taxId;
-            this.registrationNumber = regNum;
-
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Ошибка разбора JSON: " + e.getMessage());
-        }
+    // Конструктор из JSON
+    public Client(String jsonString, boolean isJson) {
+        JSONObject obj = new JSONObject(jsonString);
+        this.clientId = obj.getInt("clientId");
+        this.name = obj.getString("name");
+        this.address = obj.getString("address");
+        this.phone = obj.getString("phone");
+        this.email = obj.getString("email");
+        this.contactPerson = obj.getString("contactPerson");
+        this.taxId = obj.getString("taxId");
+        this.registrationNumber = obj.getString("registrationNumber");
     }
 
     // Геттеры и сеттеры
@@ -137,5 +109,50 @@ public class Client {
     public void setName(String name) {
         if (!validateNotEmpty(name)) throw new IllegalArgumentException("Имя не может быть пустым");
         this.name = name;
+    }
+
+    // ✅ Полная информация
+    @Override
+    public String toString() {
+        return "Client{" +
+                "clientId=" + clientId +
+                ", name='" + name + '\'' +
+                ", address='" + address + '\'' +
+                ", phone='" + phone + '\'' +
+                ", email='" + email + '\'' +
+                ", contactPerson='" + contactPerson + '\'' +
+                ", taxId='" + taxId + '\'' +
+                ", registrationNumber='" + registrationNumber + '\'' +
+                '}';
+    }
+
+    // ✅ Краткая информация
+    public String toShortString() {
+        return "Client{" +
+                "name='" + name + '\'' +
+                ", phone='" + phone + '\'' +
+                ", email='" + email + '\'' +
+                '}';
+    }
+
+    // ✅ Сравнение объектов по содержимому
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Client)) return false;
+        Client client = (Client) o;
+        return clientId == client.clientId &&
+                name.equals(client.name) &&
+                phone.equals(client.phone) &&
+                email.equals(client.email);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = clientId;
+        result = 31 * result + name.hashCode();
+        result = 31 * result + phone.hashCode();
+        result = 31 * result + email.hashCode();
+        return result;
     }
 }
