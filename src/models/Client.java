@@ -13,7 +13,7 @@ public class Client {
     private String registrationNumber;
 
     // Универсальный метод для всех проверок
-    private static boolean validate(String value, String regex) {
+    protected static boolean validate(String value, String regex) {
         return value != null && value.matches(regex);
     }
 
@@ -33,7 +33,7 @@ public class Client {
     public Client(int clientId, String name, String address, String phone, String email,
                   String contactPerson, String taxId, String registrationNumber) {
         if (!validateNotEmpty(name)) throw new IllegalArgumentException("Имя не может быть пустым");
-        if (!validatePhone(phone)) throw new IllegalArgumentException("Некорректный номер телефона");
+        if (!validatePhone(phone)) throw new IllegalArgumentException("Некорректный телефон");
         if (!validateEmail(email)) throw new IllegalArgumentException("Некорректный email");
 
         this.clientId = clientId;
@@ -111,7 +111,7 @@ public class Client {
         this.name = name;
     }
 
-    // ✅ Полная информация
+    // Полная информация
     @Override
     public String toString() {
         return "Client{" +
@@ -126,16 +126,12 @@ public class Client {
                 '}';
     }
 
-    // ✅ Краткая информация
+    // Краткая информация
     public String toShortString() {
-        return "Client{" +
-                "name='" + name + '\'' +
-                ", phone='" + phone + '\'' +
-                ", email='" + email + '\'' +
-                '}';
+        return name + " (" + contactPerson + ")";
     }
 
-    // ✅ Сравнение объектов по содержимому
+    // Сравнение объектов
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -154,5 +150,12 @@ public class Client {
         result = 31 * result + phone.hashCode();
         result = 31 * result + email.hashCode();
         return result;
+    }
+    protected Client(int clientId, String name, String contactPerson, String taxId, String registrationNumber) {
+        this.clientId = clientId;
+        this.name = name;
+        this.contactPerson = contactPerson;
+        this.taxId = taxId;
+        this.registrationNumber = registrationNumber;
     }
 }
