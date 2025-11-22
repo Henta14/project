@@ -17,6 +17,9 @@ public class Client {
         return value != null && value.matches(regex);
     }
 
+    public static boolean validateId(int id) {
+        return id > 0;
+    }
     public static boolean validateEmail(String email) {
         return validate(email, "^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,}$");
     }
@@ -25,16 +28,26 @@ public class Client {
         return validate(phone, "^\\+?\\d{10,15}$");
     }
 
+    public static boolean validateTaxId(String taxId) {
+        return validate(taxId, "^\\d{10,12}$");
+    }
     public static boolean validateNotEmpty(String value) {
         return value != null && !value.trim().isEmpty();
+    }
+    public static boolean validateRegNumber(String regNum) {
+        return validate(regNum, "^\\d{8,15}$");
     }
 
     // Основной конструктор
     public Client(int clientId, String name, String address, String phone, String email,
                   String contactPerson, String taxId, String registrationNumber) {
+        if (!validateId(clientId)) throw new IllegalArgumentException("Некорректный clientId");
         if (!validateNotEmpty(name)) throw new IllegalArgumentException("Имя не может быть пустым");
         if (!validatePhone(phone)) throw new IllegalArgumentException("Некорректный телефон");
         if (!validateEmail(email)) throw new IllegalArgumentException("Некорректный email");
+        if (!validateNotEmpty(contactPerson)) throw new IllegalArgumentException("Контактное лицо не может быть пустым");
+        if (!validateTaxId(taxId)) throw new IllegalArgumentException("Некорректный taxId (только цифры, 10–12 символов)");
+        if (!validateRegNumber(registrationNumber)) throw new IllegalArgumentException("Некорректный registrationNumber");
 
         this.clientId = clientId;
         this.name = name;
@@ -76,15 +89,28 @@ public class Client {
     // Конструктор из JSON
     public Client(String jsonString, boolean isJson) {
         JSONObject obj = new JSONObject(jsonString);
-        this.clientId = obj.getInt("clientId");
-        this.name = obj.getString("name");
-        this.address = obj.getString("address");
-        this.phone = obj.getString("phone");
-        this.email = obj.getString("email");
-        this.contactPerson = obj.getString("contactPerson");
-        this.taxId = obj.getString("taxId");
-        this.registrationNumber = obj.getString("registrationNumber");
+
+        int id = obj.getInt("clientId");
+        String name = obj.getString("name");
+        String address = obj.getString("address");
+        String phone = obj.getString("phone");
+        String email = obj.getString("email");
+        String contactPerson = obj.getString("contactPerson");
+        String taxId = obj.getString("taxId");
+        String regNum = obj.getString("registrationNumber");
+
+        new Client(id, name, address, phone, email, contactPerson, taxId, regNum);
+
+        this.clientId = id;
+        this.name = name;
+        this.address = address;
+        this.phone = phone;
+        this.email = email;
+        this.contactPerson = contactPerson;
+        this.taxId = taxId;
+        this.registrationNumber = regNum;
     }
+
 
     // Геттеры и сеттеры
     public int getClientId() { return clientId; }
