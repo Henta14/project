@@ -1,5 +1,6 @@
 package repos;
 
+import db.DbManager;
 import models.Client;
 import models.ClientShort;
 
@@ -9,18 +10,14 @@ import java.util.List;
 
 public class ClientRepDb {
 
-    private final String url;
-    private final String user;
-    private final String password;
+    private final DbManager db;
 
-    public ClientRepDb(String url, String user, String password) {
-        this.url = url;
-        this.user = user;
-        this.password = password;
+    public ClientRepDb(DbManager db) {
+        this.db = db;
     }
 
     private Connection open() throws SQLException {
-        return DriverManager.getConnection(url, user, password);
+        return db.getConnection();
     }
 
     // a) Получить объект по ID

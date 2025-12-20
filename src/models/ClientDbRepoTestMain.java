@@ -1,5 +1,6 @@
 package models;
 
+import db.DbManager;
 import repos.ClientRepDb;
 
 public class ClientDbRepoTestMain {
@@ -7,9 +8,11 @@ public class ClientDbRepoTestMain {
 
         String url = "jdbc:postgresql://localhost:5433/lab_db";
         String user = "postgres";
-        String pass = "postgres"; // тот, что уже сработал в DbConnectTestMain
+        String pass = "postgres";
 
-        ClientRepDb repo = new ClientRepDb(url, user, pass);
+        DbManager.init(url, user, pass);
+
+        ClientRepDb repo = new ClientRepDb(DbManager.getInstance());
 
         System.out.println("COUNT (start) = " + repo.getCount());
 
