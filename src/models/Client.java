@@ -40,70 +40,95 @@ public class Client extends ClientShort {
         this.email = email;
     }
 
-    // Конструктор из CSV
-    public Client(String csvLine) {
+    private static class Parsed {
+        int id;
+        String name;
+        String address;
+        String phone;
+        String email;
+        String contactPerson;
+        String taxId;
+        String regNum;
+    }
+
+    private static Parsed parseCsv(String csvLine) {
         String[] parts = csvLine.split(",");
         if (parts.length != 8) {
             throw new IllegalArgumentException("Неверный формат CSV");
         }
+        Parsed p = new Parsed();
+        p.id = Integer.parseInt(parts[0].trim());
+        p.name = parts[1].trim();
+        p.address = parts[2].trim();
+        p.phone = parts[3].trim();
+        p.email = parts[4].trim();
+        p.contactPerson = parts[5].trim();
+        p.taxId = parts[6].trim();
+        p.regNum = parts[7].trim();
+        return p;
+    }
 
-        int id = Integer.parseInt(parts[0].trim());
-        String name = parts[1].trim();
-        String address = parts[2].trim();
-        String phone = parts[3].trim();
-        String email = parts[4].trim();
-        String contactPerson = parts[5].trim();
-        String taxId = parts[6].trim();
-        String regNum = parts[7].trim();
+    private static Parsed parseJson(String jsonString) {
+        JSONObject obj = new JSONObject(jsonString);
+        Parsed p = new Parsed();
+        p.id = obj.getInt("clientId");
+        p.name = obj.getString("name");
+        p.address = obj.getString("address");
+        p.phone = obj.getString("phone");
+        p.email = obj.getString("email");
+        p.contactPerson = obj.getString("contactPerson");
+        p.taxId = obj.getString("taxId");
+        p.regNum = obj.getString("registrationNumber");
+        return p;
+    }
 
-        this(id, name, address, phone, email, contactPerson, taxId, regNum);
+    private Client(Parsed p) {
+        this(p.id, p.name, p.address, p.phone, p.email, p.contactPerson, p.taxId, p.regNum);
+    }
+
+    // Конструктор из CSV
+    public Client(String csvLine) {
+        this(parseCsv(csvLine));
     }
 
     // Конструктор из JSON
     public Client(String jsonString, boolean isJson) {
-        JSONObject obj = new JSONObject(jsonString);
-
-        int id = obj.getInt("clientId");
-        String name = obj.getString("name");
-        String address = obj.getString("address");
-        String phone = obj.getString("phone");
-        String email = obj.getString("email");
-        String contactPerson = obj.getString("contactPerson");
-        String taxId = obj.getString("taxId");
-        String regNum = obj.getString("registrationNumber");
-
-        this(id, name, address, phone, email, contactPerson, taxId, regNum);
+        this(parseJson(jsonString));
     }
 
-    public String getAddress() {
-        return address;
+    public JSONObject toJsonObject() {
+        JSONObject obj = new JSONObject();
+        obj.put("clientId", getClientId());
+        obj.put("name", getName());
+        obj.put("address", address);
+        obj.put("phone", phone);
+        obj.put("email", email);
+        obj.put("contactPerson", getContactPerson());
+        obj.put("taxId", getTaxId());
+        obj.put("registrationNumber", getRegistrationNumber());
+        return obj;
     }
 
-    public String getPhone() {
-        return phone;
+    public static Client fromJsonObject(JSONObject obj) {
+        return new Client(obj.toString(), true);
     }
 
-    public String getEmail() {
-        return email;
-    }
+    // getters/setters
+    public String getAddress() { return address; }
+    public String getPhone() { return phone; }
+    public String getEmail() { return email; }
 
     public void setPhone(String phone) {
-        if (!validatePhone(phone)) {
-            throw new IllegalArgumentException("Некорректный телефон");
-        }
+        if (!validatePhone(phone)) throw new IllegalArgumentException("Некорректный телефон");
         this.phone = phone;
     }
 
     public void setEmail(String email) {
-        if (!validateEmail(email)) {
-            throw new IllegalArgumentException("Некорректный email");
-        }
+        if (!validateEmail(email)) throw new IllegalArgumentException("Некорректный email");
         this.email = email;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
-    }
+    public void setAddress(String address) { this.address = address; }
 
     @Override
     public String toString() {
