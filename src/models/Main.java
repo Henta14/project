@@ -33,17 +33,17 @@ public class Main {
         System.out.println();
 
         String json = """
-        {
-          "clientId": 3,
-          "name": "ООО Звезда",
-          "address": "Казань",
-          "phone": "+79995553322",
-          "email": "star@mail.ru",
-          "contactPerson": "Петров П.П.",
-          "taxId": "11122233333",
-          "registrationNumber": "888777666"
-        }
-        """;
+                {
+                  "clientId": 3,
+                  "name": "ООО Звезда",
+                  "address": "Казань",
+                  "phone": "+79995553322",
+                  "email": "star@mail.ru",
+                  "contactPerson": "Петров П.П.",
+                  "taxId": "11122233333",
+                  "registrationNumber": "888777666"
+                }
+                """;
 
         Client clientJson = new Client(json, true);
 

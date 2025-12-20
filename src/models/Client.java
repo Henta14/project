@@ -114,9 +114,17 @@ public class Client extends ClientShort {
     }
 
     // getters/setters
-    public String getAddress() { return address; }
-    public String getPhone() { return phone; }
-    public String getEmail() { return email; }
+    public String getAddress() {
+        return address;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public String getEmail() {
+        return email;
+    }
 
     public void setPhone(String phone) {
         if (!validatePhone(phone)) throw new IllegalArgumentException("Некорректный телефон");
@@ -128,7 +136,9 @@ public class Client extends ClientShort {
         this.email = email;
     }
 
-    public void setAddress(String address) { this.address = address; }
+    public void setAddress(String address) {
+        this.address = address;
+    }
 
     @Override
     public String toString() {

@@ -11,6 +11,7 @@ public abstract class AbstractClientFileRepository implements ClientRepository {
 
     // Наследники должны уметь только загрузить/сохранить список
     protected abstract List<Client> load();
+
     protected abstract void save(List<Client> items);
 
     @Override
