@@ -2,24 +2,13 @@ package models;
 
 import org.json.JSONObject;
 
-public class Client {
-    private int clientId;
-    private String name;
+public class Client extends ClientShort {
+
     private String address;
     private String phone;
     private String email;
-    private String contactPerson;
-    private String taxId;
-    private String registrationNumber;
 
-    // Универсальный метод для всех проверок
-    protected static boolean validate(String value, String regex) {
-        return value != null && value.matches(regex);
-    }
-
-    public static boolean validateId(int id) {
-        return id > 0;
-    }
+    // Валидация
     public static boolean validateEmail(String email) {
         return validate(email, "^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,}$");
     }
@@ -28,41 +17,35 @@ public class Client {
         return validate(phone, "^\\+?\\d{10,15}$");
     }
 
-    public static boolean validateTaxId(String taxId) {
-        return validate(taxId, "^\\d{10,12}$");
-    }
-    public static boolean validateNotEmpty(String value) {
-        return value != null && !value.trim().isEmpty();
-    }
-    public static boolean validateRegNumber(String regNum) {
-        return validate(regNum, "^\\d{8,15}$");
-    }
+    public Client(int clientId,
+                  String name,
+                  String address,
+                  String phone,
+                  String email,
+                  String contactPerson,
+                  String taxId,
+                  String registrationNumber) {
 
-    // Основной конструктор
-    public Client(int clientId, String name, String address, String phone, String email,
-                  String contactPerson, String taxId, String registrationNumber) {
-        if (!validateId(clientId)) throw new IllegalArgumentException("Некорректный clientId");
-        if (!validateNotEmpty(name)) throw new IllegalArgumentException("Имя не может быть пустым");
-        if (!validatePhone(phone)) throw new IllegalArgumentException("Некорректный телефон");
-        if (!validateEmail(email)) throw new IllegalArgumentException("Некорректный email");
-        if (!validateNotEmpty(contactPerson)) throw new IllegalArgumentException("Контактное лицо не может быть пустым");
-        if (!validateTaxId(taxId)) throw new IllegalArgumentException("Некорректный taxId (только цифры, 10–12 символов)");
-        if (!validateRegNumber(registrationNumber)) throw new IllegalArgumentException("Некорректный registrationNumber");
+        super(clientId, name, contactPerson, taxId, registrationNumber);
 
-        this.clientId = clientId;
-        this.name = name;
+        if (!validatePhone(phone)) {
+            throw new IllegalArgumentException("Некорректный телефон");
+        }
+        if (!validateEmail(email)) {
+            throw new IllegalArgumentException("Некорректный email");
+        }
+
         this.address = address;
         this.phone = phone;
         this.email = email;
-        this.contactPerson = contactPerson;
-        this.taxId = taxId;
-        this.registrationNumber = registrationNumber;
     }
 
     // Конструктор из CSV
     public Client(String csvLine) {
         String[] parts = csvLine.split(",");
-        if (parts.length != 8) throw new IllegalArgumentException("Неверный формат CSV");
+        if (parts.length != 8) {
+            throw new IllegalArgumentException("Неверный формат CSV");
+        }
 
         int id = Integer.parseInt(parts[0].trim());
         String name = parts[1].trim();
@@ -73,17 +56,7 @@ public class Client {
         String taxId = parts[6].trim();
         String regNum = parts[7].trim();
 
-        // Используем основной конструктор для валидации
-        new Client(id, name, address, phone, email, contactPerson, taxId, regNum);
-
-        this.clientId = id;
-        this.name = name;
-        this.address = address;
-        this.phone = phone;
-        this.email = email;
-        this.contactPerson = contactPerson;
-        this.taxId = taxId;
-        this.registrationNumber = regNum;
+        this(id, name, address, phone, email, contactPerson, taxId, regNum);
     }
 
     // Конструктор из JSON
@@ -99,89 +72,55 @@ public class Client {
         String taxId = obj.getString("taxId");
         String regNum = obj.getString("registrationNumber");
 
-        new Client(id, name, address, phone, email, contactPerson, taxId, regNum);
-
-        this.clientId = id;
-        this.name = name;
-        this.address = address;
-        this.phone = phone;
-        this.email = email;
-        this.contactPerson = contactPerson;
-        this.taxId = taxId;
-        this.registrationNumber = regNum;
+        this(id, name, address, phone, email, contactPerson, taxId, regNum);
     }
 
+    public String getAddress() {
+        return address;
+    }
 
-    // Геттеры и сеттеры
-    public int getClientId() { return clientId; }
-    public String getName() { return name; }
-    public String getAddress() { return address; }
-    public String getPhone() { return phone; }
-    public String getEmail() { return email; }
-    public String getContactPerson() { return contactPerson; }
-    public String getTaxId() { return taxId; }
-    public String getRegistrationNumber() { return registrationNumber; }
+    public String getPhone() {
+        return phone;
+    }
 
-    public void setEmail(String email) {
-        if (!validateEmail(email)) throw new IllegalArgumentException("Некорректный email");
-        this.email = email;
+    public String getEmail() {
+        return email;
     }
 
     public void setPhone(String phone) {
-        if (!validatePhone(phone)) throw new IllegalArgumentException("Некорректный телефон");
+        if (!validatePhone(phone)) {
+            throw new IllegalArgumentException("Некорректный телефон");
+        }
         this.phone = phone;
     }
 
-    public void setName(String name) {
-        if (!validateNotEmpty(name)) throw new IllegalArgumentException("Имя не может быть пустым");
-        this.name = name;
+    public void setEmail(String email) {
+        if (!validateEmail(email)) {
+            throw new IllegalArgumentException("Некорректный email");
+        }
+        this.email = email;
     }
 
-    // Полная информация
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
     @Override
     public String toString() {
         return "Client{" +
-                "clientId=" + clientId +
-                ", name='" + name + '\'' +
+                "clientId=" + getClientId() +
+                ", name='" + getName() + '\'' +
                 ", address='" + address + '\'' +
                 ", phone='" + phone + '\'' +
                 ", email='" + email + '\'' +
-                ", contactPerson='" + contactPerson + '\'' +
-                ", taxId='" + taxId + '\'' +
-                ", registrationNumber='" + registrationNumber + '\'' +
+                ", contactPerson='" + getContactPerson() + '\'' +
+                ", taxId='" + getTaxId() + '\'' +
+                ", registrationNumber='" + getRegistrationNumber() + '\'' +
                 '}';
     }
 
-    // Краткая информация
+    @Override
     public String toShortString() {
-        return name + " (" + contactPerson + ")";
-    }
-
-    // Сравнение объектов
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Client)) return false;
-        Client client = (Client) o;
-        return clientId == client.clientId &&
-                name.equals(client.name) &&
-                phone.equals(client.phone) &&
-                email.equals(client.email);
-    }
-
-    @Override
-    public int hashCode() {
-        int result = clientId;
-        result = 31 * result + name.hashCode();
-        result = 31 * result + phone.hashCode();
-        result = 31 * result + email.hashCode();
-        return result;
-    }
-    protected Client(int clientId, String name, String contactPerson, String taxId, String registrationNumber) {
-        this.clientId = clientId;
-        this.name = name;
-        this.contactPerson = contactPerson;
-        this.taxId = taxId;
-        this.registrationNumber = registrationNumber;
+        return super.toShortString();
     }
 }

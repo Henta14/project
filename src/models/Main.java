@@ -1,31 +1,38 @@
 package models;
 
-import models.Client;
-import models.ClientShort;
-
-public class    Main {
+public class Main {
     public static void main(String[] args) {
 
-        // Создание объекта Client
-        Client client = new Client(1, "ООО Ромашка", "Москва, ул. Ленина", "+79991234567",
-                "info@romashka.ru", "Иванов И.И.", "12345678901", "987654321");
+        Client client = new Client(
+                1,
+                "ООО Ромашка",
+                "Москва, ул. Ленина",
+                "+79991234567",
+                "info@romashka.ru",
+                "Иванов И.И.",
+                "12345678901",
+                "987654321"
+        );
 
-        System.out.println("Client full: " + client.toString());
+        System.out.println("Client full:  " + client.toString());
+        System.out.println("Client full:  " + client);
         System.out.println("Client short: " + client.toShortString());
+        System.out.println();
 
-        // Создание объекта ClientShort
-        ClientShort clientShort = new ClientShort(client);
+        // 2. Краткий клиент из полного
+        ClientShort shortFromFull = new ClientShort(client);
+        System.out.println("ClientShort from Client: " + shortFromFull.toShortString());
+        System.out.println();
 
-        System.out.println("ClientShort fullInfo: " + clientShort.fullInfo());
-        System.out.println("ClientShort shortInfo: " + clientShort.shortInfo());
-
+        // 3. Клиент из CSV
         String csv = "2,ООО Луна,Санкт-Петербург,+79990001122,luna@mail.ru,Сидоров С.С.,55544433333,999888777";
         Client clientCsv = new Client(csv);
 
-        System.out.println("Полная версия: " + clientCsv.toString());
-        System.out.println("Краткая версия: " + clientCsv.toShortString());
+        System.out.println("CSV full:  " + clientCsv.toString());
+        System.out.println("CSV short: " + clientCsv.toShortString());
         System.out.println();
 
+        // 4. Клиент из JSON
         String json = """
         {
           "clientId": 3,
@@ -41,8 +48,7 @@ public class    Main {
 
         Client clientJson = new Client(json, true);
 
-        System.out.println("Полная версия: " + clientJson.toString());
-        System.out.println("Краткая версия: " + clientJson.toShortString());
-        System.out.println();
+        System.out.println("JSON full:  " + clientJson.toString());
+        System.out.println("JSON short: " + clientJson.toShortString());
     }
 }
