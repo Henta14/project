@@ -37,4 +37,11 @@ public final class DbManager {
     public Connection getConnection() throws SQLException {
         return DriverManager.getConnection(url, user, password);
     }
+    public static synchronized void initIfNeeded(String url, String user, String password) {
+        if (instance == null) {
+            instance = new DbManager(url, user, password);
+        }
+    }
+
 }
+
