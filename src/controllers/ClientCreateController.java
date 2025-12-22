@@ -4,7 +4,7 @@ import io.javalin.http.Context;
 import models.Client;
 import observer.ObservableClientRepository;
 import validation.ClientValidator;
-import views.ClientCreateView;
+import views.ClientFormView;
 import views.ErrorView;
 import views.PopupCloseView;
 
@@ -19,8 +19,18 @@ public class ClientCreateController {
     }
 
     public void showForm(Context ctx) {
-        ctx.contentType("text/html; charset=utf-8");
-        ctx.result(ClientCreateView.render("", "", "", "", "", "", "", List.of()));
+        try {
+            ctx.contentType("text/html; charset=utf-8");
+            ctx.result(ClientFormView.render(
+                    "Добавить клиента",
+                    "/clients",
+                    "Сохранить",
+                    "", "", "", "", "", "", "",
+                    List.of()
+            ));
+        } catch (Exception e) {
+            ctx.status(500).result(ErrorView.render("Ошибка", e.toString()));
+        }
     }
 
     public void submit(Context ctx) {
@@ -35,22 +45,24 @@ public class ClientCreateController {
 
             List<String> errors = ClientValidator.validate(name, phone, email, taxId);
             if (!errors.isEmpty()) {
-                ctx.status(400).result(ClientCreateView.render(
-                        name, address, phone, email, contactPerson, taxId, registrationNumber, errors
+                ctx.status(400);
+                ctx.contentType("text/html; charset=utf-8");
+                ctx.result(ClientFormView.render(
+                        "Добавить клиента",
+                        "/clients",
+                        "Сохранить",
+                        name, address, phone, email, contactPerson, taxId, registrationNumber,
+                        errors
                 ));
                 return;
             }
 
-            // ВНИМАНИЕ: repo.add формирует новый ID сам (по ТЗ ЛР2).
-            // Поэтому здесь id = 1 как "валидная заглушка" (твой Client не принимает 0).
-            Client draft = new Client(
-                    1, name, address, phone, email, contactPerson, taxId, registrationNumber
-            );
-
+            // создаём Client ТОЛЬКО после валидации
+            Client draft = new Client(1, name, address, phone, email, contactPerson, taxId, registrationNumber);
             repo.add(draft);
 
             ctx.contentType("text/html; charset=utf-8");
-            ctx.result(PopupCloseView.render("Клиент добавлен"));
+            ctx.result(PopupCloseView.render("Клиент добавлен ✅"));
         } catch (Exception e) {
             ctx.status(500).result(ErrorView.render("Ошибка добавления", e.toString()));
         }

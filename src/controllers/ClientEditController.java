@@ -4,7 +4,7 @@ import io.javalin.http.Context;
 import models.Client;
 import observer.ObservableClientRepository;
 import validation.ClientValidator;
-import views.ClientEditView;
+import views.ClientFormView;
 import views.ErrorView;
 import views.PopupCloseView;
 
@@ -23,8 +23,25 @@ public class ClientEditController {
             int id = Integer.parseInt(ctx.pathParam("id"));
             Client c = repo.getById(id);
 
+            if (c == null) {
+                ctx.status(404).result(ErrorView.render("Не найдено", "Клиент id=" + id + " не найден"));
+                return;
+            }
+
             ctx.contentType("text/html; charset=utf-8");
-            ctx.result(ClientEditView.render(c, List.of()));
+            ctx.result(ClientFormView.render(
+                    "Редактировать клиента",
+                    "/clients/" + id,
+                    "Сохранить",
+                    c.getName(),
+                    c.getAddress(),
+                    c.getPhone(),
+                    c.getEmail(),
+                    c.getContactPerson(),
+                    c.getTaxId(),
+                    c.getRegistrationNumber(),
+                    List.of()
+            ));
         } catch (Exception e) {
             ctx.status(500).result(ErrorView.render("Ошибка", e.toString()));
         }
@@ -44,9 +61,15 @@ public class ClientEditController {
 
             List<String> errors = ClientValidator.validate(name, phone, email, taxId);
             if (!errors.isEmpty()) {
-                // собрать клиента для повторного отображения формы
-                Client c = new Client(id, name, address, phone, email, contactPerson, taxId, registrationNumber);
-                ctx.status(400).result(ClientEditView.render(c, errors));
+                ctx.status(400);
+                ctx.contentType("text/html; charset=utf-8");
+                ctx.result(ClientFormView.render(
+                        "Редактировать клиента",
+                        "/clients/" + id,
+                        "Сохранить",
+                        name, address, phone, email, contactPerson, taxId, registrationNumber,
+                        errors
+                ));
                 return;
             }
 
