@@ -38,4 +38,8 @@ public class ObservableClientRepository {
     public int getCount() {
         return repo.getCount();
     }
+
+    public Client add(Client item) { return repo.add(item); }
+    public boolean replaceById(int id, Client item) { return repo.replaceById(id, item); }
+    public boolean deleteById(int id) { return repo.deleteById(id); }
 }

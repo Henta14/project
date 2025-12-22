@@ -9,6 +9,7 @@ public class ClientDetailsView {
             return LayoutView.page("Клиент", "<h1>Не найден</h1><p><a class='btn' href='/'>Назад</a></p>");
         }
 
+
         String body = """
         <h1>%s</h1>
         <p><b>ID:</b> %d</p>

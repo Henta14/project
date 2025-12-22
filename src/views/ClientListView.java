@@ -11,6 +11,7 @@ public class ClientListView {
 
         sb.append("<div class='row'>")
                 .append("<h1 style='margin:0'>Клиенты</h1>")
+                .append("<a class='btn' target='_blank' href='/clients/new'>+ Добавить</a>")
                 .append("</div><br/>");
 
         sb.append("<table><thead><tr>")

@@ -1,5 +1,6 @@
 package app;
 
+import controllers.ClientCreateController;
 import controllers.ClientDetailsController;
 import controllers.ClientListController;
 import db.DbManager;
@@ -13,7 +14,6 @@ public class WebAppMain {
 
     public static void main(String[] args) {
 
-        // TODO: подставь свой пароль/юзер/URL (те, что уже работали в тестах)
         DbManager.initIfNeeded(
                 "jdbc:postgresql://localhost:5433/lab_db",
                 "postgres",
@@ -25,12 +25,16 @@ public class WebAppMain {
 
         ClientListController listController = new ClientListController(observableRepo);
         ClientDetailsController detailsController = new ClientDetailsController(observableRepo);
+        ClientCreateController createController = new ClientCreateController(observableRepo);
 
-        Javalin app = Javalin.create(cfg -> {
-            cfg.http.defaultContentType = "text/html; charset=utf-8";
-        });
+        Javalin app = Javalin.create(cfg -> cfg.http.defaultContentType = "text/html; charset=utf-8");
 
         app.get("/", listController::handle);
+
+
+        app.get("/clients/new", createController::showForm);
+        app.post("/clients", createController::submit);
+
         app.get("/clients/{id}", detailsController::handle);
 
         app.start(8090);

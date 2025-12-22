@@ -17,7 +17,13 @@ public class ClientDetailsController {
 
     public void handle(Context ctx) {
         try {
-            int id = Integer.parseInt(ctx.pathParam("id"));
+            String rawId = ctx.pathParam("id");
+            if (rawId == null || !rawId.matches("\\d+")) {
+                ctx.status(404).result(ErrorView.render("Не найдено", "Некорректный id: " + rawId));
+                return;
+            }
+
+            int id = Integer.parseInt(rawId);
 
             final Holder<Client> holder = new Holder<>();
 
@@ -37,6 +43,7 @@ public class ClientDetailsController {
             ctx.status(500).result(ErrorView.render("Ошибка", e.toString()));
         }
     }
+
 
     private static class Holder<T> { T value; }
 }
