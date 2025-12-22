@@ -9,6 +9,8 @@ import observer.ObservableClientRepository;
 import repos.ClientRepDb;
 import repos.ClientRepDbAdapter;
 import repos.ClientRepository;
+import controllers.ClientEditController;
+
 
 public class WebAppMain {
 
@@ -26,10 +28,14 @@ public class WebAppMain {
         ClientListController listController = new ClientListController(observableRepo);
         ClientDetailsController detailsController = new ClientDetailsController(observableRepo);
         ClientCreateController createController = new ClientCreateController(observableRepo);
+        ClientEditController editController = new ClientEditController(observableRepo);
 
         Javalin app = Javalin.create(cfg -> cfg.http.defaultContentType = "text/html; charset=utf-8");
 
         app.get("/", listController::handle);
+
+        app.get("/clients/{id}/edit", editController::showForm);
+        app.post("/clients/{id}", editController::submit);
 
 
         app.get("/clients/new", createController::showForm);
@@ -39,5 +45,6 @@ public class WebAppMain {
 
         app.start(8090);
         System.out.println("Open: http://localhost:8090");
+
     }
 }
