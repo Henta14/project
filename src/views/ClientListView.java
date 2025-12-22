@@ -6,28 +6,40 @@ import java.util.List;
 
 public class ClientListView {
 
-    public static String render(List<ClientShort> items, String q) {
+    public static String render(List<ClientShort> items, String q, String sort) {
         StringBuilder sb = new StringBuilder();
 
         String qq = q == null ? "" : q;
+        String ss = sort == null ? "name_asc" : sort;
 
-        // Заголовок + кнопка добавить
         sb.append("<div class='row'>")
                 .append("<h1 style='margin:0'>Клиенты</h1>")
                 .append("<a class='btn' target='_blank' href='/clients/new'>+ Добавить</a>")
                 .append("</div><br/>");
 
-        // Форма фильтра
         sb.append("""
             <form method="get" action="/" class="row" style="gap:10px;align-items:center">
-              <input name="q" placeholder="Поиск по названию..." value="%s" style="width:320px">
-              <button type="submit">Найти</button>
+              <input name="q" placeholder="Поиск по названию..." value="%s" style="width:260px">
+
+              <select name="sort">
+                <option value="name_asc" %s>Название A→Z</option>
+                <option value="name_desc" %s>Название Z→A</option>
+                <option value="id_asc" %s>ID ↑</option>
+                <option value="id_desc" %s>ID ↓</option>
+              </select>
+
+              <button type="submit">Применить</button>
               <a class="btn" href="/">Сброс</a>
             </form>
             <br/>
-        """.formatted(LayoutView.esc(qq)));
+        """.formatted(
+                LayoutView.esc(qq),
+                "name_asc".equals(ss) ? "selected" : "",
+                "name_desc".equals(ss) ? "selected" : "",
+                "id_asc".equals(ss) ? "selected" : "",
+                "id_desc".equals(ss) ? "selected" : ""
+        ));
 
-        // Таблица
         sb.append("<table border='1' cellspacing='0' cellpadding='8' style='border-collapse:collapse;width:100%'>");
         sb.append("<tr>")
                 .append("<th>ID</th>")
