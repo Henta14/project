@@ -25,6 +25,12 @@ public class ClientDetailsView {
 
         <p class="row">
           <a class="btn" target="_blank" href="/clients/%d/edit">Редактировать</a>
+
+          <form method="post" action="/clients/%d/delete" style="display:inline"
+                onsubmit="return confirm('Удалить клиента?');">
+            <button type="submit">Удалить</button>
+          </form>
+
           <a class="btn" href="/">Назад</a>
         </p>
         """.formatted(
@@ -36,6 +42,7 @@ public class ClientDetailsView {
                 LayoutView.esc(c.getContactPerson()),
                 LayoutView.esc(c.getTaxId()),
                 LayoutView.esc(c.getRegistrationNumber()),
+                c.getClientId(),
                 c.getClientId()
         );
 

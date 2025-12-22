@@ -10,7 +10,7 @@ import repos.ClientRepDb;
 import repos.ClientRepDbAdapter;
 import repos.ClientRepository;
 import controllers.ClientEditController;
-
+import controllers.ClientDeleteController;
 
 public class WebAppMain {
 
@@ -29,6 +29,7 @@ public class WebAppMain {
         ClientDetailsController detailsController = new ClientDetailsController(observableRepo);
         ClientCreateController createController = new ClientCreateController(observableRepo);
         ClientEditController editController = new ClientEditController(observableRepo);
+        ClientDeleteController deleteController = new ClientDeleteController(observableRepo);
 
         Javalin app = Javalin.create(cfg -> cfg.http.defaultContentType = "text/html; charset=utf-8");
 
@@ -42,6 +43,7 @@ public class WebAppMain {
         app.post("/clients", createController::submit);
 
         app.get("/clients/{id}", detailsController::handle);
+        app.post("/clients/{id}/delete", deleteController::submit);
 
         app.start(8090);
         System.out.println("Open: http://localhost:8090");
